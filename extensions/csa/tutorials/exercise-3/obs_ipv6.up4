@@ -1,0 +1,63 @@
+#include"msa.up4"
+#include"../exe_common.up4"
+
+cpackage IPv6(pkt p, im_t im, in empty_t ia, out bit<16> nh, inout empty_t ioa);
+
+header ethernet_h {
+  bit<48> dstAddr;
+  bit<48> srcAddr;
+  bit<16> ethType; 
+}
+
+struct hdr_t {
+  ethernet_h eth;
+}
+
+cpackage OBSIPv6 : implements Unicast<hdr_t, empty_t, 
+                                            empty_t, empty_t, empty_t> {
+  parser micro_parser(extractor ex, pkt p, im_t im, out hdr_t hdr, inout empty_t m,
+                        in empty_t ia, inout empty_t ioa) {
+    state start {
+      ex.extract(p, hdr.eth);
+      transition accept;
+    }
+  }
+
+  control micro_control(pkt p, im_t im, inout hdr_t hdr, inout empty_t m,
+                          in empty_t ia, out empty_t oa, inout empty_t ioa) {
+    bit<16> nh;
+
+    IPv6() ipv6_i;
+
+    action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
+      hdr.eth.dstAddr = dstAddr;
+      hdr.eth.srcAddr = srcAddr;
+      im.set_out_port(port);
+    }
+
+    table forward_tbl {
+        key = { nh : exact; } 
+        actions = { forward; }
+        const entries = {
+            (16w1) : forward(0x000000000001, 48w0x00aabb000001, 9w1);
+            (16w2) : forward(0x000000000002, 48w0x00aabb000002, 9w2);
+        }
+    }
+  
+    apply { 
+        nh = 16w0;
+ 
+        if (hdr.eth.ethType == 0x86DD)
+            ipv6_i.apply(p, im, ia, nh, ioa);
+
+        forward_tbl.apply(); 
+    }
+  }
+
+  control micro_deparser(emitter em, pkt p, in hdr_t hdr) {
+    apply { 
+        em.emit(p, hdr.eth); 
+    }
+  }
+}
+OBSIPv6() main;
