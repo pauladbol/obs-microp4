@@ -96,21 +96,21 @@ class MultipleSwitchTopo(Topo):
                                 log_console = True,
                                 enable_debugger = True)
 
-        switch2 = self.addSwitch('s2',
-                                sw_path = sw_path,
-                                json_path = json_path,
-                                thrift_port = thrift_port,
-                                pcap_dump = pcap_dump,
-                                log_console = True,
-                                enable_debugger = True)
+        # switch2 = self.addSwitch('s2',
+        #                         sw_path = sw_path,
+        #                         json_path = json_path,
+        #                         thrift_port = thrift_port,
+        #                         pcap_dump = pcap_dump,
+        #                         log_console = True,
+        #                         enable_debugger = True)
         
-        switch3 = self.addSwitch('s3',
-                                sw_path = sw_path,
-                                json_path = json_path,
-                                thrift_port = thrift_port,
-                                pcap_dump = pcap_dump,
-                                log_console = True,
-                                enable_debugger = True)
+        # switch3 = self.addSwitch('s3',
+        #                         sw_path = sw_path,
+        #                         json_path = json_path,
+        #                         thrift_port = thrift_port,
+        #                         pcap_dump = pcap_dump,
+        #                         log_console = True,
+        #                         enable_debugger = True)
 
         host1 = self.addHost('h%d' % (1),
                             cls = IPv6Node,  ipv6='202'+str(1)+'::1/64', 
@@ -118,7 +118,7 @@ class MultipleSwitchTopo(Topo):
                             mac = '00:00:00:00:00:%02x' %(1))
         host2 = self.addHost('h%d' % (2),
                             cls = IPv6Node,  ipv6='202'+str(2)+'::1/64', 
-                            ip = "10.0.%d.1/24" % (2),
+                            # ip = "10.0.%d.1/24" % (2),
                             mac = '00:00:00:00:00:%02x' %(2))
         host3 = self.addHost('h%d' % (3),
                             cls = IPv6Node,  ipv6='202'+str(3)+'::1/64', 
@@ -127,17 +127,20 @@ class MultipleSwitchTopo(Topo):
 
         host4 = self.addHost('h%d' % (4),
                             cls = IPv6Node,  ipv6='202'+str(4)+'::1/64', 
-                            ip = "10.0.%d.1/24" % (3),
+                            # ip = "10.0.%d.1/24" % (3),
                             mac = '00:00:00:00:00:%02x' %(4))
 
         self.addLink(host1, switch1)
         self.addLink(host2, switch1)
-
-        self.addLink(switch1, switch2) 
-        self.addLink(switch1, switch3)    
         
-        self.addLink(switch2, host3) 
-        self.addLink(switch3, host4)              
+        self.addLink(host3, switch1)
+        self.addLink(host4, switch1)
+
+        # self.addLink(switch1, switch2) 
+        # self.addLink(switch1, switch3)    
+        
+        # self.addLink(switch2, host3) 
+        # self.addLink(switch3, host4)              
 
         #print "xrange: " + str(xrange(n))
         #for h in xrange(n):
