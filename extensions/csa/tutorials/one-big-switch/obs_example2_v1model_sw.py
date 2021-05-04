@@ -72,7 +72,7 @@ class MultipleSwitchTopo(Topo):
 
         switch1 = self.addSwitch('s1',
                                 sw_path = sw_path,
-                                json_path = './obs_s1_v1model.json',
+                                json_path = json_path1,
                                 thrift_port = thrift_port,
                                 pcap_dump = pcap_dump,
                                 log_console = True,
@@ -80,16 +80,16 @@ class MultipleSwitchTopo(Topo):
 
         switch2 = self.addSwitch('s2',
                                 sw_path = sw_path,
-                                json_path = './obs_s2_v1model.json',
-                                thrift_port = thrift_port,
+                                json_path = json_path2,
+                                thrift_port = 9091,
                                 pcap_dump = pcap_dump,
                                 log_console = True,
                                 enable_debugger = True)
         
         switch3 = self.addSwitch('s3',
                                 sw_path = sw_path,
-                                json_path = './obs_s3_v1model.json',
-                                thrift_port = thrift_port,
+                                json_path = json_path3,
+                                thrift_port = 9092,
                                 pcap_dump = pcap_dump,
                                 log_console = True,
                                 enable_debugger = True)
@@ -178,7 +178,7 @@ def main():
 
     sleep(3)
 
-    print "Ready !" + args.json1 + " - " + args.json1 + " - " + args.json1
+    print "Ready !" + args.json1 + " - " + args.json2 + " - " + args.json3
 
     # enable following line and type h1 ping h2 on the CLI
     print "Ipv6 ping command"

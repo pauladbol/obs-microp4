@@ -224,7 +224,7 @@ control OneBigSwitchExample_micro_control(inout msa_packet_struct_t mp, inout st
             @defaultonly NoAction_0();
         }
         const entries = {
-                        16w1 : forward(48w0x1, 48w0xaabb000002, 9w1);
+                        16w1 : forward(48w0xaabb000001, 48w0xaabb000002, 9w1);
 
                         16w2 : forward(48w0x3, 48w0xaabb000002, 9w2);
 

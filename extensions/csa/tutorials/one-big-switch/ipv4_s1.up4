@@ -37,11 +37,19 @@ cpackage IPv4 : implements Unicast<ipv4_hdr_t, empty_t, empty_t, bit<16>, empty_
   control micro_control(pkt p, im_t im, inout ipv4_hdr_t hdr, inout empty_t m,
                           in empty_t e, out bit<16> nexthop, 
                           inout empty_t ioa) { // nexthop out arg
-    action process(bit<16> nh) {
-      // the public version of MicroP4 compiler has checksum code disabled.
-      // hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+    
+    const bit<32> h1_ipv4 = 167772417; // 10.0.1.1
+    const bit<32> h2_ipv4 = 167772673; // 10.0.2.1
+    const bit<32> h3_ipv4 = 167772929; // 10.0.3.1
+    const bit<32> h4_ipv4 = 167773185; // 10.0.4.1
 
-      nexthop = nh;  // setting out param
+    const bit<16> eth1 = 1;
+    const bit<16> eth2 = 2;
+    const bit<16> eth3 = 3;
+    const bit<16> eth4 = 4;
+
+    action process(bit<16> nh) {
+      nexthop = nh;
     }
     action default_act() {
       nexthop = 0; 
@@ -49,7 +57,6 @@ cpackage IPv4 : implements Unicast<ipv4_hdr_t, empty_t, empty_t, bit<16>, empty_
 
     table ipv4_lpm_tbl {
       key = { 
-        // Why not lpm? because can't specify prefix length in const entries
         hdr.ipv4.dstAddr : exact; 
         hdr.ipv4.diffserv : ternary;
       } 
@@ -59,14 +66,10 @@ cpackage IPv4 : implements Unicast<ipv4_hdr_t, empty_t, empty_t, bit<16>, empty_
       }
       const entries = {
         // v1model mininet suitable entries
-        // 10.0.1.1, _
-        (32w167772417, _) : process(16w1);
-        // 10.0.2.1, _
-        (32w167772673, _): process(16w2);
-        // 10.0.3.1, _
-        (32w167772929, _): process(16w3);
-        // 10.0.4.1, _
-        (32w167773185, _): process(16w4);
+        (h1_ipv4, _): process(eth1);
+        (h2_ipv4, _): process(eth2);
+        (h3_ipv4, _): process(eth3);
+        (h4_ipv4, _): process(eth4);
       }
       default_action = default_act;
 

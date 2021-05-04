@@ -27,6 +27,16 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
                           in empty_t ia, out empty_t oa, inout empty_t ioa) {
     bit<16> nh;
 
+    const bit<48> mac_s1 = 0x00aabb000001;
+    const bit<48> mac_s2 = 0x00aabb000002;
+    const bit<48> mac_h3 = 0x000000000003;
+
+    const bit<16> next_hop_eth1 = 1;
+    const bit<16> next_hop_eth2 = 2;
+
+    const bit<9> eth1 = 1;
+    const bit<9> eth2 = 2;
+
     IPv4() ipv4_i;
 
     action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
@@ -41,9 +51,10 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
           
         } 
         actions = { forward; }
+
         const entries = {
-            (16w1) : forward(0x000000000001, 48w0x00aabb000002, 9w1);
-            (16w2) : forward(0x000000000003, 48w0x00aabb000002, 9w2);
+            (next_hop_eth1) : forward(mac_s1, mac_s2, eth1);
+            (next_hop_eth2) : forward(mac_h3, mac_s2, eth2);
         }
     }
   
