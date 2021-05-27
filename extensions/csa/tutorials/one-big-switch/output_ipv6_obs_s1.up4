@@ -1,14 +1,6 @@
-#include"msa.up4"
-#include"../exe_common.up4"
-
-//ipv4-begins
-cpackage IPv4(pkt p, im_t im, in empty_t ia, out bit<16> nh, inout empty_t ioa);
-//ipv4-ends
-
 //ipv6-begins
 cpackage IPv6(pkt p, im_t im, in empty_t ia, out bit<16> nh, inout empty_t ioa);
 //ipv6-ends
-
 //ethernet-begins
 header ethernet_h {
   bit<48> dstAddr;
@@ -20,10 +12,6 @@ struct hdr_t {
   ethernet_h eth;
 }
 // ethernet-ends
-
-@ModuleBegin("ipv4")
-@ModuleBegin("algoritmo1")
-
 //all-begins
 cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t, 
                                             empty_t, empty_t, empty_t> {
@@ -40,7 +28,7 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     bit<16> nh;
     
     const bit<48> mac_s1 = 0x00aabb000001;
-    const bit<48> mac_s2 = 0x00aabb000002;
+    const bit<48> mac_s2 = 0x00aabb000001;
     const bit<48> mac_s3 = 0x00aabb000003;
     const bit<48> mac_h1 = 0x000000000001;
     const bit<48> mac_h2 = 0x000000000002;
@@ -55,11 +43,6 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     const bit<9> eth3 = 3;
     const bit<9> eth4 = 4;
     //all-ends 
-
-    //ipv4-begins
-    IPv4() ipv4_i;
-    //ipv4-ends
-
     //ipv6-begins
     IPv6() ipv6_i;
     //ipv4-ends
@@ -88,17 +71,10 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     apply { 
         nh = 16w0;
         //all-ends
-
-        //ipv4-begins
-        if (hdr.eth.ethType == 0x0800)
-            ipv4_i.apply(p, im, ia, nh, ioa);
-        //ipv4-ends
-
         //ipv6-begins
         if (hdr.eth.ethType == 0x86DD)
             ipv6_i.apply(p, im, ia, nh, ioa);
         //ipv6-ends
-
         //all-begins
         forward_tbl.apply(); 
     }
