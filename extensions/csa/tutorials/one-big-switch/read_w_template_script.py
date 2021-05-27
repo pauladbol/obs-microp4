@@ -86,7 +86,7 @@ instantiate = []
 write_invoke = False
 invoke = []
 
-# read one big switch program and get module declare, instance and invoke codes
+# read one big switch program and get module declare, instance and invoke
 with obs_program as file:
     for line in file:
 
@@ -119,16 +119,10 @@ with obs_program as file:
 
 # read template and add program lines to new output file
 with template as t:
-    output_code = t.read()
+    new_code = t.read().replace('//module-declare', ''.join(declare))
+    new_code = new_code.replace('//module-instantiate', ''.join(instantiate))
+    new_code = new_code.replace('//module-invoke', ''.join(invoke))
 
-output_code = output_code.replace(
-    '//module-declare', ''.join(declare)
-    ).replace(
-        '//module-instantiate', ''.join(instantiate)
-        ).replace(
-            '//module-invoke', ''.join(invoke)
-            )
-
-output = open("output_w_template_" + args.module  + "_" + args.filename, "w")
-output.write(output_code)
-output.close()
+    output = open("output_w_template_" + args.module  + "_" + args.filename, "w")
+    output.write(new_code)
+    output.close()
