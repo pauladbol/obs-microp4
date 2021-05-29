@@ -28,7 +28,7 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     bit<16> nh;
     
     const bit<48> mac_s1 = 0x00aabb000001;
-    const bit<48> mac_s2 = 0x00aabb000001;
+    const bit<48> mac_s2 = 0x00aabb000002;
     const bit<48> mac_s3 = 0x00aabb000003;
     const bit<48> mac_h1 = 0x000000000001;
     const bit<48> mac_h2 = 0x000000000002;
