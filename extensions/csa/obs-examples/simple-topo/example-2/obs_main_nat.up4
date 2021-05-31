@@ -1,8 +1,6 @@
 #include"msa.up4"
 #include"../../exe_common.up4"
 
-//module-declare
-
 header ethernet_h {
   bit<48> dstAddr;
   bit<48> srcAddr;
@@ -53,7 +51,15 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     const bit<9> eth3 = 3;
     const bit<9> eth4 = 4;
 
-    //module-instantiate
+    //@ModuleInstantiateBegin("ipv4_ipv6")
+    IPv4() ipv4_i;
+    IPv6() ipv6_i;
+    //@ModuleInstantiateEnds("ipv4_ipv6")
+
+    //@ModuleInstantiateBegin("ipv4_nat")
+    IPv4NatACL() ipv4_nat_acl_i;
+    //@ModuleInstantiateEnds("ipv4_nat")
+
 
     action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
       hdr.eth.dstAddr = dstAddr;
@@ -81,7 +87,17 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
 
         empty_t e;
 
-        //module-invoke
+        //@ModuleInvokeBegin("ipv4_ipv6")
+        if (hdr.eth.ethType == 0x0800)
+          ipv4_i.apply(p, im, ia, nh, e);
+        else if (hdr.eth.ethType == 0x86DD)
+          ipv6_i.apply(p, im, ia, nh, e);
+        //@ModuleInvokeEnds("ipv4_ipv6")
+
+        //@ModuleInvokeBegin("ipv4_nat")
+        if (hdr.eth.ethType == 0x0800)
+          ipv4_nat_acl_i.apply(p, im, ia, oa, ioa.acl);
+        //@ModuleInvokeEnds("ipv4_nat")
         
         forward_tbl.apply(); 
     }

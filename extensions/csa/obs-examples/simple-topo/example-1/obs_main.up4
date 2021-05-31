@@ -1,7 +1,6 @@
 #include"msa.up4"
 #include"../../exe_common.up4"
 
-//module-declare
 
 header ethernet_h {
   bit<48> dstAddr;
@@ -13,17 +12,10 @@ struct hdr_t {
   ethernet_h eth;
 }
 
-struct nat_inout_t {
-  acl_result_t acl;
-  bit<16> next_hop;
-  bit<16> eth_type;
-}
-
-
 cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t, 
-                                            empty_t, empty_t, nat_inout_t> {
+                                            empty_t, empty_t, empty_t> {
   parser micro_parser(extractor ex, pkt p, im_t im, out hdr_t hdr, inout empty_t m,
-                        in empty_t ia, inout nat_inout_t ioa) {
+                        in empty_t ia, inout empty_t ioa) {
     state start {
       ex.extract(p, hdr.eth);
       transition accept;
@@ -31,7 +23,7 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
   }
 
   control micro_control(pkt p, im_t im, inout hdr_t hdr, inout empty_t m,
-                          in empty_t ia, out empty_t oa, inout nat_inout_t ioa) {
+                          in empty_t ia, out empty_t oa, inout empty_t ioa) {
     bit<16> nh;
 
     const bit<48> mac_s1 = 0x00aabb000001;
@@ -53,7 +45,13 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     const bit<9> eth3 = 3;
     const bit<9> eth4 = 4;
 
-    //module-instantiate
+    //@ModuleInstantiateBegin("ipv4")
+    IPv4() ipv4_i;
+    //@ModuleInstantiateEnds("ipv4")
+
+    //@ModuleInstantiateBegin("ipv6")
+    IPv6() ipv6_i;
+    //@ModuleInstantiateEnds("ipv6")
 
     action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
       hdr.eth.dstAddr = dstAddr;
@@ -79,10 +77,16 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     apply { 
         nh = 16w0;
 
-        empty_t e;
-
-        //module-invoke
+        //@ModuleInvokeBegin("ipv4")
+        if (hdr.eth.ethType == 0x0800)
+          ipv4_i.apply(p, im, ia, nh, ioa);
+        //@ModuleInvokeEnds("ipv4")
         
+        //@ModuleInvokeBegin("ipv6")
+        if (hdr.eth.ethType == 0x86DD)
+          ipv6_i.apply(p, im, ia, nh, ioa);
+        //@ModuleInvokeEnds("ipv6")
+
         forward_tbl.apply(); 
     }
   }

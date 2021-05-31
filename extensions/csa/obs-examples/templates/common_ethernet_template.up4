@@ -1,5 +1,5 @@
 #include"msa.up4"
-#include"../exe_common.up4"
+#include"../../exe_common.up4"
 
 //module-declare
 
