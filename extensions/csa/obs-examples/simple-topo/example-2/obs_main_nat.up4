@@ -51,14 +51,16 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
     const bit<9> eth3 = 3;
     const bit<9> eth4 = 4;
 
-    //@ModuleInstantiateBegin("ipv4_ipv6")
+    //@ModuleInstantiateBegin("ipv4")
     IPv4() ipv4_i;
+    //@ModuleInstantiateEnd("ipv4")
+    //@ModuleInstantiateBegin("ipv6")
     IPv6() ipv6_i;
-    //@ModuleInstantiateEnds("ipv4_ipv6")
+    //@ModuleInstantiateEnd("ipv4")
 
     //@ModuleInstantiateBegin("ipv4_nat")
     IPv4NatACL() ipv4_nat_acl_i;
-    //@ModuleInstantiateEnds("ipv4_nat")
+    //@ModuleInstantiateEnd("ipv4_nat")
 
 
     action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
@@ -87,18 +89,19 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
 
         empty_t e;
 
-        //@ModuleInvokeBegin("ipv4_ipv6")
+        //@ModuleInvokeBegin("ipv4")
         if (hdr.eth.ethType == 0x0800)
           ipv4_i.apply(p, im, ia, nh, e);
-        else if (hdr.eth.ethType == 0x86DD)
-          ipv6_i.apply(p, im, ia, nh, e);
-        //@ModuleInvokeEnds("ipv4_ipv6")
-
-        //@ModuleInvokeBegin("ipv4_nat")
-        if (hdr.eth.ethType == 0x0800)
+          //@ModuleInvokeBegin("nat")
           ipv4_nat_acl_i.apply(p, im, ia, oa, ioa.acl);
-        //@ModuleInvokeEnds("ipv4_nat")
+          //@ModuleInvokeEnd("nat")
+        //@ModuleInvokeEnd("ipv4")
         
+        //@ModuleInvokeBegin("ipv6")
+        if (hdr.eth.ethType == 0x86DD)
+          ipv6_i.apply(p, im, ia, nh, e);
+        //@ModuleInvokeEnd("ipv6")
+
         forward_tbl.apply(); 
     }
   }

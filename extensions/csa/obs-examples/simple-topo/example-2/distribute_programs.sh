@@ -2,9 +2,9 @@ sudo mn -c
 
 echo -e "\n*********************************" 
 echo -e "\n Generating switch programs with a template "
-python ../../generate_switch_program_w_template.py --switchname s1 --module all --filename obs_main_nat.up4 --template ../../templates/common_ethernet_template.up4
-python ../../generate_switch_program_w_template.py --switchname s2 --module ipv4_nat --filename obs_main_nat.up4 --template ../../templates/nat_template.up4
-python ../../generate_switch_program_w_template.py --switchname s3 --module ipv4_ipv6 --filename obs_main_nat.up4 --template ../../templates/common_ethernet_template.up4
+python ../../generate_switch_program_w_template.py --switchname s1 --modules all --filename obs_main_nat.up4 --template ../../templates/common_ethernet_template.up4
+python ../../generate_switch_program_w_template.py --switchname s2 --modules ipv4_nat --filename obs_main_nat.up4 --template ../../templates/nat_template.up4
+python ../../generate_switch_program_w_template.py --switchname s3 --modules ipv4,ipv6 --filename obs_main_nat.up4 --template ../../templates/common_ethernet_template.up4
 
 echo -e "\n*********************************" 
 echo -e "\n Compiling uP4 includes "
@@ -16,7 +16,7 @@ ${UP4ROOT}/build/p4c-msa -I ${UP4ROOT}/build/p4include -o ipv4_nat_acl.json ipv4
 echo -e "\n*********************************" 
 echo -e "\n Compiling uP4 main programs \n"
 ${UP4ROOT}/build/p4c-msa --target-arch v1model -I ${UP4ROOT}/build/p4include  -l ipv4.json,ipv6.json,ipv4_acl.json,ipv4_nat_acl.json s1_all_main.up4
-${UP4ROOT}/build/p4c-msa --target-arch v1model -I ${UP4ROOT}/build/p4include  -l ipv4_acl.json,ipv4_nat_acl.json s2_ipv4_nat_main.up4
+${UP4ROOT}/build/p4c-msa --target-arch v1model -I ${UP4ROOT}/build/p4include  -l ipv4.json,ipv4_acl.json,ipv4_nat_acl.json s2_ipv4_nat_main.up4
 ${UP4ROOT}/build/p4c-msa --target-arch v1model -I ${UP4ROOT}/build/p4include  -l ipv4.json,ipv6.json s3_ipv4_ipv6_main.up4
 
 echo -e "\n*********************************" 

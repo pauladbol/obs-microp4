@@ -47,11 +47,11 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
 
     //@ModuleInstantiateBegin("ipv4")
     IPv4() ipv4_i;
-    //@ModuleInstantiateEnds("ipv4")
+    //@ModuleInstantiateEnd("ipv4")
 
     //@ModuleInstantiateBegin("ipv6")
     IPv6() ipv6_i;
-    //@ModuleInstantiateEnds("ipv6")
+    //@ModuleInstantiateEnd("ipv6")
 
     action forward(bit<48> dstAddr, bit<48> srcAddr, PortId_t port) {
       hdr.eth.dstAddr = dstAddr;
@@ -80,12 +80,12 @@ cpackage OneBigSwitchExample : implements Unicast<hdr_t, empty_t,
         //@ModuleInvokeBegin("ipv4")
         if (hdr.eth.ethType == 0x0800)
           ipv4_i.apply(p, im, ia, nh, ioa);
-        //@ModuleInvokeEnds("ipv4")
+        //@ModuleInvokeEnd("ipv4")
         
         //@ModuleInvokeBegin("ipv6")
         if (hdr.eth.ethType == 0x86DD)
           ipv6_i.apply(p, im, ia, nh, ioa);
-        //@ModuleInvokeEnds("ipv6")
+        //@ModuleInvokeEnd("ipv6")
 
         forward_tbl.apply(); 
     }
